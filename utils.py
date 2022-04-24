@@ -50,8 +50,13 @@ class AnnoDataModule:
 
 
 class AnnoTrainModule:
-    def __init__(self, input_shape):
+    def __init__(self, input_shape, batch_size, ckpt_path, model_path, log_dir):
         self.INPUT_SHAPE = input_shape
+        self.BATCH_SIZE = batch_size
+
+        self.CKPT_PATH = ckpt_path
+        self.MODEL_PATH = model_path
+        self.LOG_DIR = log_dir
 
     def create_model(self, num_conv_blocks):
         input_layer = layers.Input(shape=self.INPUT_SHAPE)
@@ -99,3 +104,42 @@ class AnnoTrainModule:
         )
 
         return model
+
+    def train(self, model: models.Model,
+              x_train, y_cls_train, y_lndmrk_train,
+              x_valid, y_cls_valid, y_lndmrk_valid):
+        CALLBACKS_MONITOR = "val_lndmrk_out_mean_squared_error"
+        model.fit(
+            x={"img": x_train}, y={"cls_out": y_cls_train, "lndmrk_out": y_lndmrk_train},
+            batch_size=32,
+            epochs=1000,
+            callbacks=[
+                callbacks.TensorBoard(
+                    log_dir=self.LOG_DIR
+                ),
+                callbacks.ReduceLROnPlateau(
+                    monitor=CALLBACKS_MONITOR,
+                    factor=0.5,
+                    patience=5,
+                    verbose=1,
+                    min_lr=1e-8
+                ),
+                callbacks.ModelCheckpoint(
+                    filepath=self.CKPT_PATH,
+                    monitor=CALLBACKS_MONITOR
+                ),
+                callbacks.EarlyStopping(
+                    monitor=CALLBACKS_MONITOR,
+                    min_delta=1e-5,
+                    patience=16,
+                    verbose=1
+                )
+            ],
+            validation_data=(
+                {"img": x_valid}, {"cls_out": y_cls_valid, "lndmrk_out": y_lndmrk_valid}
+            )
+        )
+        model.load_weights(
+            filepath=self.CKPT_PATH
+        )
+        model.save(filepath=self.MODEL_PATH)
