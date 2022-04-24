@@ -59,7 +59,7 @@ class AnnoTrainModule:
         self.LOG_DIR = log_dir
 
     def create_model(self, num_conv_blocks):
-        input_layer = layers.Input(shape=self.INPUT_SHAPE)
+        input_layer = layers.Input(shape=self.INPUT_SHAPE, name="img")
         conv_layer_77 = layers.Conv2D(filters=64, kernel_size=(7, 7), padding="same", activation=activations.relu,
                                       kernel_initializer=initializers.he_uniform(), name=f"conv2d_77")(input_layer)
         x = conv_layer_77
@@ -94,7 +94,7 @@ class AnnoTrainModule:
             optimizer=optimizers.Adam(),
             metrics={
                 "cls_out": metrics.categorical_accuracy,
-                "lndmrk_out": metrics.categorical_accuracy
+                "lndmrk_out": metrics.MSE
             },
             loss={
                 "cls_out": metrics.categorical_crossentropy,
