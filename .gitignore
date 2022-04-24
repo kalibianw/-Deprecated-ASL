@@ -1,4 +1,6 @@
-tmp/
 .idea/
 .ipynb_checkpoints/
+tmp/
 npz/
+ckpt/
+log/
