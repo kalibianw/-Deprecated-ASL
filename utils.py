@@ -5,6 +5,8 @@ import numpy as np
 import cv2
 import os
 
+from tensorflow.keras import models, layers, activations, initializers, optimizers, metrics, losses, callbacks
+
 
 class AnnoDataModule:
     def __init__(self, dataset_dir_path):
@@ -50,3 +52,50 @@ class AnnoDataModule:
 class AnnoTrainModule:
     def __init__(self, input_shape):
         self.INPUT_SHAPE = input_shape
+
+    def create_model(self, num_conv_blocks):
+        input_layer = layers.Input(shape=self.INPUT_SHAPE)
+        conv_layer_77 = layers.Conv2D(filters=64, kernel_size=(7, 7), padding="same", activation=activations.relu,
+                                      kernel_initializer=initializers.he_uniform(), name=f"conv2d_77")(input_layer)
+        x = conv_layer_77
+
+        block_cnt = 1
+        for i in range(1, num_conv_blocks + 1):
+            num_conv_filters = 2 ** (5 + block_cnt)
+            x_ = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.relu if i <= 2 else activations.selu,
+                               kernel_initializer=initializers.he_uniform(), name=f"conv2d_{i}_1")(x)
+            x = layers.BatchNormalization(name=f"bn_{i}_1")(x_)
+            x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.relu if i <= 2 else activations.selu,
+                              kernel_initializer=initializers.he_uniform(), name=f"conv2d_{i}_2")(x)
+            x = layers.BatchNormalization(name=f"bn_{i}_2")(x)
+            x = layers.Add()([x_, x])
+            if i == num_conv_blocks:
+                x = layers.AvgPool2D(padding="same", name=f"avg_pool_2d")(x)
+                break
+            x = layers.MaxPooling2D(padding="same", name=f"max_pool_2d_{i}")(x)
+
+            if i % 2 == 0:
+                block_cnt += 1
+
+        x = layers.Flatten()(x)
+
+        x = layers.Dense(1024, activation=activations.selu, kernel_initializer=initializers.he_uniform())(x)
+
+        cls_out = layers.Dense(24, activation=activations.softmax, kernel_initializer=initializers.he_uniform(), name="cls_out")(x)
+        landmark_out = layers.Dense(52, activation=activations.softmax, kernel_initializer=initializers.he_uniform(), name="lndmrk_out")(x)
+
+        model = models.Model(input_layer, [cls_out, landmark_out])
+        model.compile(
+            optimizer=optimizers.Adam(),
+            metrics={
+                "cls_out": metrics.categorical_accuracy,
+                "lndmrk_out": metrics.categorical_accuracy
+            },
+            loss={
+                "cls_out": metrics.categorical_crossentropy,
+                "lndmrk_out": metrics.MSE
+            },
+            run_eagerly=True
+        )
+
+        return model
