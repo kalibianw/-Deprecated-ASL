@@ -45,3 +45,8 @@ class AnnoDataModule:
                 landmarks.append(landmark)
 
         return np.array(fnames), np.array(chars), np.array(landmarks)
+
+
+class AnnoTrainModule:
+    def __init__(self, input_shape):
+        self.INPUT_SHAPE = input_shape
