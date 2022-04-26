@@ -20,7 +20,6 @@ lndmrks = label_npz_loader["landmarks"]
 
 for img, lndmrk in zip(imgs[:5], lndmrks[:5]):
     print(img.shape, lndmrk.shape)
-    img = cv2.cvtColor(img, code=cv2.COLOR_BGR2RGB)
     cv2.imshow("test", img)
     cv2.waitKey(0)
     cv2.destroyWindow("test")

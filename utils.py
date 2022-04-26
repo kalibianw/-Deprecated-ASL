@@ -22,7 +22,6 @@ class AnnoDataModule:
                 fname = f"{self.DATASET_DIR_PATH}/{label_name}/lit/{img_name}"
                 img = cv2.imread(filename=fname)
                 img = cv2.resize(src=img, dsize=(0, 0), fx=rescaling_ratio, fy=rescaling_ratio)
-                img = cv2.cvtColor(img, code=cv2.COLOR_BGR2RGB)
 
                 imgs.append(img)
                 fnames.append(fname)
