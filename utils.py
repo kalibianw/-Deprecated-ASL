@@ -96,8 +96,8 @@ class AnnoTrainModule:
                 "lndmrk_out": metrics.MSE
             },
             loss={
-                "cls_out": metrics.categorical_crossentropy,
-                "lndmrk_out": metrics.MSE
+                "cls_out": losses.categorical_crossentropy,
+                "lndmrk_out": losses.MSE
             },
             run_eagerly=True
         )
