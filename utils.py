@@ -86,8 +86,10 @@ class AnnoTrainModule:
 
     def create_model(self, num_conv_blocks):
         input_layer = layers.Input(shape=self.INPUT_SHAPE, name="img")
+        rescaling_layer = layers.experimental.preprocessing.Rescaling(scale=1 / 255.0)(input_layer)
+
         conv_layer_77 = layers.Conv2D(filters=64, kernel_size=(7, 7), padding="same", activation=activations.relu,
-                                      kernel_initializer=initializers.he_uniform(), name=f"conv2d_77")(input_layer)
+                                      kernel_initializer=initializers.he_uniform(), name=f"conv2d_77")(rescaling_layer)
         x = conv_layer_77
 
         block_cnt = 1
@@ -112,7 +114,7 @@ class AnnoTrainModule:
 
         x = layers.Dense(1024, activation=activations.selu, kernel_initializer=initializers.he_uniform())(x)
 
-        cls_out = layers.Dense(24, activation=activations.softmax, kernel_initializer=initializers.he_uniform(), name="cls_out")(x)
+        cls_out = layers.Dense(26, activation=activations.softmax, kernel_initializer=initializers.he_uniform(), name="cls_out")(x)
         landmark_out = layers.Dense(52, activation=activations.softmax, kernel_initializer=initializers.he_uniform(), name="lndmrk_out")(x)
 
         model = models.Model(input_layer, [cls_out, landmark_out])
