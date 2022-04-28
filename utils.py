@@ -117,7 +117,7 @@ class AnnoTrainModule:
         x = layers.Dense(1024, activation=activations.selu, kernel_initializer=initializers.he_uniform())(x)
 
         cls_out = layers.Dense(26, activation=activations.softmax, kernel_initializer=initializers.he_uniform(), name="cls_out")(x)
-        landmark_out = layers.Dense(52, activation=activations.softmax, kernel_initializer=initializers.he_uniform(), name="lndmrk_out")(x)
+        landmark_out = layers.Dense(52, activation=None, kernel_initializer=initializers.he_uniform(), name="lndmrk_out")(x)
 
         model = models.Model(input_layer, [cls_out, landmark_out])
         model.compile(
