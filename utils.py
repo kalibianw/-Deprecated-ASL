@@ -150,7 +150,7 @@ class AnnoTrainModule:
                 callbacks.ReduceLROnPlateau(
                     monitor=CALLBACKS_MONITOR,
                     factor=0.5,
-                    patience=5,
+                    patience=3,
                     verbose=1,
                     min_lr=1e-8
                 ),
@@ -164,7 +164,7 @@ class AnnoTrainModule:
                 callbacks.EarlyStopping(
                     monitor=CALLBACKS_MONITOR,
                     min_delta=1e-5,
-                    patience=16,
+                    patience=11,
                     verbose=1
                 )
             ],
