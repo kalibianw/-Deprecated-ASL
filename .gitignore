@@ -4,3 +4,4 @@ tmp/
 npz/
 ckpt/
 log/
+model/
