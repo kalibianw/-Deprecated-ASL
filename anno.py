@@ -30,6 +30,8 @@ LOG_DIR = rmkdir(f"log/anno_{RESCALING_RATIO}/")
 BATCH_SIZE = 32
 VALID_SIZE = 0.2
 
+CALLBACKS_MONITOR = "val_lndmrk_out_mean_absolute_error"
+
 NPZ_LOADER = np.load(NPZ_PATH)
 for key in NPZ_LOADER:
     print(key)
@@ -81,5 +83,5 @@ atm.train(
     x_valid=x_valid,
     y_cls_valid=y_cls_valid,
     y_lndmrk_valid=y_lndmrk_valid,
-    CALLBACKS_MONITOR="val_lndmrk_out_mean_absolute_error"
+    CALLBACKS_MONITOR=CALLBACKS_MONITOR
 )

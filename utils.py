@@ -90,6 +90,10 @@ class AnnoTrainModule:
 
         x = rescaling_layer
 
+        x = layers.Conv2D(32, kernel_size=32, padding="same", activation=activations.relu, kernel_initializer=initializers.he_uniform(), name="conv2d_0")(x)
+        x = layers.BatchNormalization()(x)
+        x = layers.MaxPooling2D()(x)
+
         block_cnt = 1
         for i in range(1, num_conv_blocks + 1):
             num_conv_filters = 2 ** (5 + block_cnt)
@@ -101,7 +105,7 @@ class AnnoTrainModule:
             x = layers.BatchNormalization(name=f"bn_{i}_2")(x)
             x = layers.Add()([x_, x])
             if i == num_conv_blocks:
-                x = layers.AvgPool2D(padding="same", name=f"avg_pool_2d")(x)
+                x = layers.AvgPool2D(padding="same", strides=(1, 1), name=f"avg_pool_2d")(x)
                 break
             x = layers.MaxPooling2D(padding="same", name=f"max_pool_2d_{i}")(x)
 
