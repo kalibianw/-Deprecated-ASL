@@ -30,7 +30,7 @@ LOG_DIR = rmkdir(f"log/anno_{RESCALING_RATIO}/")
 BATCH_SIZE = 32
 VALID_SIZE = 0.2
 
-CALLBACKS_MONITOR = "val_lndmrk_out_loss"
+CALLBACKS_MONITOR = "val_loss"
 
 NPZ_LOADER = np.load(NPZ_PATH)
 for key in NPZ_LOADER:
