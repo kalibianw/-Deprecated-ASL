@@ -9,26 +9,38 @@ from tensorflow.keras import models, layers, activations, initializers, optimize
 
 
 class AnnoDataModule:
-    def __init__(self, dataset_dir_path):
+    def __init__(self, dataset_dir_path, rescaling_ratio=1, img_height=None, img_width=None):
         self.DATASET_DIR_PATH = dataset_dir_path
         print(f"Find {len(os.listdir(self.DATASET_DIR_PATH))} class(es).")
         print(os.listdir(self.DATASET_DIR_PATH))
+        self.RESCALING_RATIO = rescaling_ratio
+        self.IMG_HEIGHT = img_height
+        self.IMG_WIDTH = img_width
 
-    def img_to_np(self, rescaling_ratio=1):
+    def img_to_np(self):
         fnames = list()
         imgs = list()
         for label_name in tqdm(os.listdir(self.DATASET_DIR_PATH), desc="img_to_np"):
             for img_name in tqdm(os.listdir(f"{self.DATASET_DIR_PATH}/{label_name}/lit/")):
                 fname = f"{self.DATASET_DIR_PATH}/{label_name}/lit/{img_name}"
                 img = cv2.imread(filename=fname)
-                img = cv2.resize(src=img, dsize=(0, 0), fx=rescaling_ratio, fy=rescaling_ratio)
+                img = cv2.resize(src=img, dsize=(0, 0), fx=self.RESCALING_RATIO, fy=self.RESCALING_RATIO)
+                self.IMG_HEIGHT = img.shape[0]
+                self.IMG_WIDTH = img.shape[1]
 
                 imgs.append(img)
                 fnames.append(fname)
 
+        print(f"image height: {self.IMG_HEIGHT}\nimage width: {self.IMG_WIDTH}")
         return np.array(fnames), np.array(imgs)
 
-    def label_to_np(self, rescaling_ratio=1):
+    def label_to_np(self):
+        if (self.IMG_HEIGHT is None) or (self.IMG_WIDTH is None):
+            raise Exception("""
+            IMG_HEIGHT or IMG_WIDTH is None.
+            If you didn't run img_to_np, please determine the image height and width on the initialization method.
+            """)
+
         fnames = list()
         chars = list()
         landmarks = list()
@@ -39,7 +51,7 @@ class AnnoDataModule:
                 raw_landmark = pd_json["Landmarks"].to_numpy()
                 landmark = list()
                 for mark in raw_landmark:
-                    landmark.append([int(mark[0] * rescaling_ratio), int(mark[1] * rescaling_ratio)])
+                    landmark.append([mark[0] / self.IMG_WIDTH * self.RESCALING_RATIO, mark[1] / self.IMG_HEIGHT * self.RESCALING_RATIO])
 
                 fnames.append(fname)
                 chars.append(label_name)

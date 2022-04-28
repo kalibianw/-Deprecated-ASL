@@ -20,6 +20,9 @@ lndmrks = label_npz_loader["landmarks"]
 
 for img, lndmrk in zip(imgs[:5], lndmrks[:5]):
     print(img.shape, lndmrk.shape)
+    lndmrk[:, 0] *= img.shape[1]
+    lndmrk[:, 1] *= img.shape[0]
+    lndmrk = np.asarray(lndmrk, dtype=int)
     cv2.imshow("test", img)
     cv2.waitKey(0)
     cv2.destroyWindow("test")

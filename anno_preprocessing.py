@@ -5,9 +5,9 @@ DATASET_DIR_PATH = "D:/AI/data/ASL Alphabet Synthetic"
 RESCALING_RATIO = 1
 COMPRESSED = False
 
-dm = AnnoDataModule(dataset_dir_path=DATASET_DIR_PATH)
+dm = AnnoDataModule(dataset_dir_path=DATASET_DIR_PATH, rescaling_ratio=RESCALING_RATIO)
 
-img_fnames, imgs = dm.img_to_np(rescaling_ratio=RESCALING_RATIO)
+img_fnames, imgs = dm.img_to_np()
 print(img_fnames.shape, imgs.shape)
 if COMPRESSED:
     np.savez_compressed(file=f"npz/AnnoImgNumpy_{RESCALING_RATIO}.npz", fnames=img_fnames, imgs=imgs)
@@ -16,7 +16,7 @@ else:
 del img_fnames
 del imgs
 
-label_fnames, chars, landmarks = dm.label_to_np(rescaling_ratio=RESCALING_RATIO)
+label_fnames, chars, landmarks = dm.label_to_np()
 print(label_fnames.shape, chars.shape, landmarks.shape)
 if COMPRESSED:
     np.savez_compressed(file=f"npz/AnnoLabelNumpy_{RESCALING_RATIO}.npz", fnames=label_fnames, chars=chars, landmarks=landmarks)
