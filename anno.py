@@ -3,6 +3,7 @@ from utils import AnnoTrainModule, AnnoDataModule
 from sklearn.model_selection import train_test_split
 
 import numpy as np
+import shutil
 import os
 
 
@@ -11,11 +12,21 @@ def mkdir(path):
     return path
 
 
+def rmkdir(path):
+    if os.path.exists(os.path.dirname(path)):
+        shutil.rmtree(path)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+    else:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
+    return path
+
+
 RESCALING_RATIO = 0.5
 NPZ_PATH = f"npz/AnnoNumpy_{RESCALING_RATIO}.npz"
-CKPT_PATH = mkdir(f"ckpt/anno_{RESCALING_RATIO}/anno_{RESCALING_RATIO}.ckpt")
+CKPT_PATH = rmkdir(f"ckpt/anno_{RESCALING_RATIO}/anno_{RESCALING_RATIO}.ckpt")
 MODEL_PATH = mkdir(f"model/anno_{RESCALING_RATIO}.h5")
-LOG_DIR = mkdir(f"log/anno_{RESCALING_RATIO}/")
+LOG_DIR = rmkdir(f"log/anno_{RESCALING_RATIO}/")
 BATCH_SIZE = 32
 VALID_SIZE = 0.2
 
@@ -58,7 +69,7 @@ atm = AnnoTrainModule(
     model_path=MODEL_PATH,
     log_dir=LOG_DIR
 )
-model = atm.create_model(num_conv_blocks=5)
+model = atm.create_model(num_conv_blocks=6)
 model.summary()
 model.save(filepath=MODEL_PATH)
 
