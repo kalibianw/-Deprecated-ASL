@@ -88,9 +88,7 @@ class AnnoTrainModule:
         input_layer = layers.Input(shape=self.INPUT_SHAPE, name="img")
         rescaling_layer = layers.experimental.preprocessing.Rescaling(scale=1 / 255.0)(input_layer)
 
-        conv_layer_77 = layers.Conv2D(filters=64, kernel_size=(7, 7), padding="same", activation=activations.relu,
-                                      kernel_initializer=initializers.he_uniform(), name=f"conv2d_77")(rescaling_layer)
-        x = conv_layer_77
+        x = rescaling_layer
 
         block_cnt = 1
         for i in range(1, num_conv_blocks + 1):
@@ -122,7 +120,7 @@ class AnnoTrainModule:
             optimizer=optimizers.Adam(),
             metrics={
                 "cls_out": metrics.categorical_accuracy,
-                "lndmrk_out": metrics.MSE
+                "lndmrk_out": metrics.MAE
             },
             loss={
                 "cls_out": losses.categorical_crossentropy,
@@ -136,7 +134,7 @@ class AnnoTrainModule:
     def train(self, model: models.Model,
               x_train, y_cls_train, y_lndmrk_train,
               x_valid, y_cls_valid, y_lndmrk_valid):
-        CALLBACKS_MONITOR = "val_lndmrk_out_mean_squared_error"
+        CALLBACKS_MONITOR = "val_lndmrk_out_loss"
         model.fit(
             x={"img": x_train}, y={"cls_out": y_cls_train, "lndmrk_out": y_lndmrk_train},
             batch_size=self.BATCH_SIZE,
@@ -154,7 +152,10 @@ class AnnoTrainModule:
                 ),
                 callbacks.ModelCheckpoint(
                     filepath=self.CKPT_PATH,
-                    monitor=CALLBACKS_MONITOR
+                    monitor=CALLBACKS_MONITOR,
+                    verbose=1,
+                    save_best_only=True,
+                    save_weights_only=True
                 ),
                 callbacks.EarlyStopping(
                     monitor=CALLBACKS_MONITOR,
