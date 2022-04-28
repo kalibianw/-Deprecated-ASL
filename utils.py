@@ -5,14 +5,17 @@ import numpy as np
 import cv2
 import os
 
+from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
+
 from tensorflow.keras import models, layers, activations, initializers, optimizers, metrics, losses, callbacks
 
 
 class AnnoDataModule:
     def __init__(self, dataset_dir_path, rescaling_ratio=1, img_height=None, img_width=None):
         self.DATASET_DIR_PATH = dataset_dir_path
-        print(f"Find {len(os.listdir(self.DATASET_DIR_PATH))} class(es).")
-        print(os.listdir(self.DATASET_DIR_PATH))
+        if self.DATASET_DIR_PATH is not None:
+            print(f"Find {len(os.listdir(self.DATASET_DIR_PATH))} class(es).")
+            print(os.listdir(self.DATASET_DIR_PATH))
         self.RESCALING_RATIO = rescaling_ratio
         self.IMG_HEIGHT = img_height
         self.IMG_WIDTH = img_width
@@ -35,12 +38,6 @@ class AnnoDataModule:
         return np.array(fnames), np.array(imgs)
 
     def label_to_np(self):
-        if (self.IMG_HEIGHT is None) or (self.IMG_WIDTH is None):
-            raise Exception("""
-            IMG_HEIGHT or IMG_WIDTH is None.
-            If you didn't run img_to_np, please determine the image height and width on the initialization method.
-            """)
-
         fnames = list()
         chars = list()
         landmarks = list()
@@ -51,13 +48,31 @@ class AnnoDataModule:
                 raw_landmark = pd_json["Landmarks"].to_numpy()
                 landmark = list()
                 for mark in raw_landmark:
-                    landmark.append([mark[0] / self.IMG_WIDTH * self.RESCALING_RATIO, mark[1] / self.IMG_HEIGHT * self.RESCALING_RATIO])
+                    landmark.append([mark[0] * self.RESCALING_RATIO, mark[1] * self.RESCALING_RATIO])
 
                 fnames.append(fname)
                 chars.append(label_name)
                 landmarks.append(landmark)
 
         return np.array(fnames), np.array(chars), np.array(landmarks)
+
+    def label_normalization(self, chars, landmarks):
+        if (self.IMG_HEIGHT is None) or (self.IMG_WIDTH is None):
+            raise Exception("""
+            IMG_HEIGHT or IMG_WIDTH is None.
+            If you didn't run img_to_np, please determine the image height and width on the initialization method.
+            """)
+        ordinal_enc = OrdinalEncoder()
+        ordinal_chars = ordinal_enc.fit_transform(np.expand_dims(chars, axis=-1))
+
+        onehot_enc = OneHotEncoder()
+        onehot_chars = onehot_enc.fit_transform(ordinal_chars)
+        onehot_chars = onehot_chars.toarray()
+
+        landmarks[:, :, 0] /= self.IMG_WIDTH
+        landmarks[:, :, 1] /= self.IMG_HEIGHT
+
+        return onehot_chars, landmarks
 
 
 class AnnoTrainModule:

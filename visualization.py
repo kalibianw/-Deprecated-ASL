@@ -1,3 +1,5 @@
+from utils import AnnoDataModule
+
 import numpy as np
 import cv2
 
