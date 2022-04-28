@@ -11,11 +11,12 @@ def mkdir(path):
     return path
 
 
-NPZ_PATH = "npz/AnnoNumpy_0.5.npz"
-CKPT_PATH = mkdir("ckpt/anno_0.5/anno_0.5.ckpt")
-MODEL_PATH = mkdir("model/anno_0.5.h5")
-LOG_DIR = mkdir("log/anno_0.5/")
-BATCH_SIZE = 8
+RESCALING_RATIO = 0.5
+NPZ_PATH = f"npz/AnnoNumpy_{RESCALING_RATIO}.npz"
+CKPT_PATH = mkdir(f"ckpt/anno_{RESCALING_RATIO}/anno_{RESCALING_RATIO}.ckpt")
+MODEL_PATH = mkdir(f"model/anno_{RESCALING_RATIO}.h5")
+LOG_DIR = mkdir(f"log/anno_{RESCALING_RATIO}/")
+BATCH_SIZE = 32
 VALID_SIZE = 0.2
 
 NPZ_LOADER = np.load(NPZ_PATH)
@@ -30,7 +31,7 @@ print(np.unique(y_cls_train, return_counts=True))
 
 adm = AnnoDataModule(
     dataset_dir_path=None,
-    rescaling_ratio=0.5,
+    rescaling_ratio=RESCALING_RATIO,
     img_height=x_train.shape[1],
     img_width=x_train.shape[2]
 )
@@ -57,7 +58,7 @@ atm = AnnoTrainModule(
     model_path=MODEL_PATH,
     log_dir=LOG_DIR
 )
-model = atm.create_model(num_conv_blocks=6)
+model = atm.create_model(num_conv_blocks=5)
 model.summary()
 model.save(filepath=MODEL_PATH)
 
