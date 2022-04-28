@@ -139,7 +139,7 @@ class AnnoTrainModule:
         CALLBACKS_MONITOR = "val_lndmrk_out_mean_squared_error"
         model.fit(
             x={"img": x_train}, y={"cls_out": y_cls_train, "lndmrk_out": y_lndmrk_train},
-            batch_size=32,
+            batch_size=self.BATCH_SIZE,
             epochs=1000,
             callbacks=[
                 callbacks.TensorBoard(
