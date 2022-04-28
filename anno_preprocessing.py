@@ -1,24 +1,32 @@
 from utils import AnnoDataModule
+from sklearn.model_selection import train_test_split
 import numpy as np
 
 DATASET_DIR_PATH = "D:/AI/data/ASL Alphabet Synthetic"
-RESCALING_RATIO = 1
+RESCALING_RATIO = 0.5
+TEST_SIZE = 0.3
 COMPRESSED = False
 
 dm = AnnoDataModule(dataset_dir_path=DATASET_DIR_PATH, rescaling_ratio=RESCALING_RATIO)
 
 img_fnames, imgs = dm.img_to_np()
 print(img_fnames.shape, imgs.shape)
-if COMPRESSED:
-    np.savez_compressed(file=f"npz/AnnoImgNumpy_{RESCALING_RATIO}.npz", fnames=img_fnames, imgs=imgs)
-else:
-    np.savez(file=f"npz/AnnoImgNumpy_{RESCALING_RATIO}.npz", fnames=img_fnames, imgs=imgs)
-del img_fnames
-del imgs
 
 label_fnames, chars, landmarks = dm.label_to_np()
 print(label_fnames.shape, chars.shape, landmarks.shape)
+
+x_train, x_test, y_cls_train, y_cls_test, y_lndmrk_train, y_lndmrk_test = train_test_split(imgs, chars, landmarks, test_size=TEST_SIZE, stratify=chars)
+print(x_train.shape, x_test.shape,
+      y_cls_train.shape, y_cls_test.shape,
+      y_lndmrk_train.shape, y_lndmrk_test.shape)
+
 if COMPRESSED:
-    np.savez_compressed(file=f"npz/AnnoLabelNumpy_{RESCALING_RATIO}.npz", fnames=label_fnames, chars=chars, landmarks=landmarks)
+    np.savez_compressed(file=f"npz/AnnoNumpy_{RESCALING_RATIO}_compressed.npz",
+                        x_train=x_train, x_test=x_test,
+                        y_cls_train=y_cls_train, y_cls_test=y_cls_test,
+                        y_lndmrk_train=y_lndmrk_train, y_lndmrk_test=y_lndmrk_test)
 else:
-    np.savez(file=f"npz/AnnoLabelNumpy_{RESCALING_RATIO}.npz", fnames=label_fnames, chars=chars, landmarks=landmarks)
+    np.savez(file=f"npz/AnnoNumpy_{RESCALING_RATIO}.npz",
+             x_train=x_train, x_test=x_test,
+             y_cls_train=y_cls_train, y_cls_test=y_cls_test,
+             y_lndmrk_train=y_lndmrk_train, y_lndmrk_test=y_lndmrk_test)

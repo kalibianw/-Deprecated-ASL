@@ -1,34 +1,33 @@
 import numpy as np
 import cv2
 
-IMG_NPZ_PATH = "npz/AnnoImgNumpy_0.5.npz"
-LABEL_NPZ_PATH = "npz/AnnoLabelNumpy_0.5.npz"
+npz_loader = np.load("npz/AnnoNumpy_0.5.npz")
 
-img_npz_loader = np.load(IMG_NPZ_PATH)
-label_npz_loader = np.load(LABEL_NPZ_PATH)
-for key in img_npz_loader:
-    print(key)
-for key in label_npz_loader:
+for key in npz_loader:
     print(key)
 
-img_fnames = img_npz_loader["fnames"]
-imgs = img_npz_loader["imgs"]
+imgs = npz_loader["x_train"]
+chars = npz_loader["y_cls_train"]
+lndmrks = npz_loader["y_lndmrk_train"]
+print(imgs.shape, chars.shape, lndmrks.shape)
+print(np.unique(chars, return_counts=True))
 
-label_fnames = label_npz_loader["fnames"]
-chars = label_npz_loader["chars"]
-lndmrks = label_npz_loader["landmarks"]
+print(f"image height: {imgs.shape[1]}\nimage width: {imgs.shape[2]}")
+adm = AnnoDataModule(dataset_dir_path=None, rescaling_ratio=0.5, img_height=imgs.shape[1], img_width=imgs.shape[2])
+encoded_chars, lndmrks = adm.label_normalization(
+    chars, lndmrks
+)
 
-for img, lndmrk in zip(imgs[:5], lndmrks[:5]):
-    print(img.shape, lndmrk.shape)
+for img, char, lndmrk in zip(imgs[:5], chars[:5], lndmrks[:5]):
     lndmrk[:, 0] *= img.shape[1]
     lndmrk[:, 1] *= img.shape[0]
     lndmrk = np.asarray(lndmrk, dtype=int)
-    cv2.imshow("test", img)
+    cv2.imshow(f"{char}", img)
     cv2.waitKey(0)
-    cv2.destroyWindow("test")
+    cv2.destroyAllWindows()
 
     pts = np.reshape(a=lndmrk, newshape=(-1, 1, 2))
     cv2.polylines(img, pts=pts, isClosed=True, color=(255, 255, 255), thickness=5)
-    cv2.imshow("test", img)
+    cv2.imshow(f"{char}", img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
