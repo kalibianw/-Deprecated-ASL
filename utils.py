@@ -133,8 +133,8 @@ class AnnoTrainModule:
 
     def train(self, model: models.Model,
               x_train, y_cls_train, y_lndmrk_train,
-              x_valid, y_cls_valid, y_lndmrk_valid):
-        CALLBACKS_MONITOR = "val_lndmrk_out_loss"
+              x_valid, y_cls_valid, y_lndmrk_valid,
+              CALLBACKS_MONITOR):
         model.fit(
             x={"img": x_train}, y={"cls_out": y_cls_train, "lndmrk_out": y_lndmrk_train},
             batch_size=self.BATCH_SIZE,

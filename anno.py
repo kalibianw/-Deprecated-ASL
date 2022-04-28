@@ -14,7 +14,7 @@ def mkdir(path):
 
 def rmkdir(path):
     if os.path.exists(os.path.dirname(path)):
-        shutil.rmtree(path)
+        shutil.rmtree(os.path.dirname(path))
         os.makedirs(os.path.dirname(path), exist_ok=True)
     else:
         os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -80,5 +80,6 @@ atm.train(
     y_lndmrk_train=y_lndmrk_train,
     x_valid=x_valid,
     y_cls_valid=y_cls_valid,
-    y_lndmrk_valid=y_lndmrk_valid
+    y_lndmrk_valid=y_lndmrk_valid,
+    CALLBACKS_MONITOR="val_lndmrk_out_mean_absolute_error"
 )
