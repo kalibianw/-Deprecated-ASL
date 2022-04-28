@@ -11,7 +11,7 @@ def mkdir(path):
     return path
 
 
-NPZ_PATH = mkdir("npz/AnnoNumpy_0.5.npz")
+NPZ_PATH = "npz/AnnoNumpy_0.5.npz"
 CKPT_PATH = mkdir("ckpt/anno_0.5/anno_0.5.ckpt")
 MODEL_PATH = mkdir("model/anno_0.5.h5")
 LOG_DIR = mkdir("log/anno_0.5/")
