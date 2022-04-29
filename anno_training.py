@@ -51,10 +51,11 @@ adm = AnnoDataModule(
 
 # Data Normalization (Image will be normalized during the training)
 y_cls_train = adm.label_normalization(chars=y_cls_train)
-print(x_train.shape, y_cls_train.shape, y_lndmrk_train.shape)
 
 # Reshape y_lndmrk
 y_lndmrk_train = np.reshape(y_lndmrk_train, newshape=(y_lndmrk_train.shape[0], y_lndmrk_train.shape[1] * y_lndmrk_train.shape[2]))
+
+print(x_train.shape, y_cls_train.shape, y_lndmrk_train.shape)
 
 # Train and Valid split
 x_train, x_valid, y_cls_train, y_cls_valid, y_lndmrk_train, y_lndmrk_valid = train_test_split(
