@@ -75,6 +75,29 @@ class AnnoDataModule:
         return onehot_chars, landmarks
 
 
+class AnnoVisualModule:
+    def __init__(self, is_chars_normalized=False, is_lndmrks_normalized=False):
+        self.is_chars_normalized = is_chars_normalized
+        self.is_lndmrks_normalized = is_lndmrks_normalized
+
+    def show_output(self, imgs, chars, lndmrks):
+        if self.is_chars_normalized:
+            chars = np.argmax(chars, axis=1)
+        for img, char, lndmrk in zip(imgs, chars, lndmrks):
+            print(lndmrk)
+            cv2.imshow(f"{char}", mat=img)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+            pts = np.reshape(lndmrk, newshape=(-1, 1, 2))
+            pts = np.asarray(pts, dtype=int)
+            img_clone = img.copy()
+            cv2.polylines(img_clone, pts=pts, isClosed=True, color=(255, 255, 255), thickness=5)
+            cv2.imshow(f"{char}", mat=img_clone)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+
 class AnnoTrainModule:
     def __init__(self, input_shape, batch_size, ckpt_path, model_path, log_dir):
         self.INPUT_SHAPE = input_shape
