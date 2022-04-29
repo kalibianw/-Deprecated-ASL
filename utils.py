@@ -56,7 +56,7 @@ class AnnoDataModule:
 
         return np.array(fnames), np.array(chars), np.array(landmarks)
 
-    def label_normalization(self, chars, landmarks):
+    def label_normalization(self, chars):
         if (self.IMG_HEIGHT is None) or (self.IMG_WIDTH is None):
             raise Exception("""
             IMG_HEIGHT or IMG_WIDTH is None.
@@ -69,10 +69,7 @@ class AnnoDataModule:
         onehot_chars = onehot_enc.fit_transform(ordinal_chars)
         onehot_chars = onehot_chars.toarray()
 
-        landmarks[:, :, 0] /= self.IMG_WIDTH
-        landmarks[:, :, 1] /= self.IMG_HEIGHT
-
-        return onehot_chars, landmarks
+        return onehot_chars
 
 
 class AnnoVisualModule:
