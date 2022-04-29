@@ -71,6 +71,20 @@ class AnnoDataModule:
 
         return onehot_chars
 
+    def lndmrk_normalization(self, landmarks):
+        if (self.IMG_HEIGHT is None) or (self.IMG_WIDTH is None):
+            raise Exception("""
+            IMG_HEIGHT or IMG_WIDTH is None.
+            If you didn't run img_to_np, please determine the image height and width on the initialization method.
+            """)
+        if len(landmarks.shape) != 3:
+            print("landmarks should be 3d array")
+
+        landmarks[:, :, 0] /= self.IMG_WIDTH
+        landmarks[:, :, 1] /= self.IMG_HEIGHT
+
+        return landmarks
+
 
 class AnnoVisualModule:
     def __init__(self, is_chars_normalized=False, is_lndmrks_normalized=False):
@@ -78,8 +92,14 @@ class AnnoVisualModule:
         self.is_lndmrks_normalized = is_lndmrks_normalized
 
     def show_output(self, imgs, chars, lndmrks):
+        img_height = imgs.shape[1]
+        img_width = imgs.shape[2]
         if self.is_chars_normalized:
             chars = np.argmax(chars, axis=1)
+        if self.is_lndmrks_normalized:
+            lndmrks[:, :, 0] *= img_width
+            lndmrks[:, :, 1] *= img_height
+
         for img, char, lndmrk in zip(imgs, chars, lndmrks):
             print(lndmrk)
             cv2.imshow(f"{char}", mat=img)
