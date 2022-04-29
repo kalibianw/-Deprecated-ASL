@@ -32,12 +32,12 @@ VALID_SIZE = 0.2
 
 CALLBACKS_MONITOR = "val_loss"
 
-NPZ_LOADER = np.load(NPZ_PATH)
-for key in NPZ_LOADER:
+npz_loader = np.load(NPZ_PATH)
+for key in npz_loader:
     print(key)
 
 # Load dataset
-x_train, y_cls_train, y_lndmrk_train = NPZ_LOADER["x_train"], NPZ_LOADER["y_cls_train"], NPZ_LOADER["y_lndmrk_train"]
+x_train, y_cls_train, y_lndmrk_train = npz_loader["x_train"], npz_loader["y_cls_train"], npz_loader["y_lndmrk_train"]
 
 print(x_train.shape, y_cls_train.shape, y_lndmrk_train.shape)
 print(np.unique(y_cls_train, return_counts=True))
