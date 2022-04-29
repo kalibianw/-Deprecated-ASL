@@ -50,7 +50,7 @@ adm = AnnoDataModule(
 )
 
 # Data Normalization (Image will be normalized during the training)
-y_cls_train = adm.label_normalization(chars=y_cls_train)
+y_cls_train = adm.cls_normalization(chars=y_cls_train)
 
 # Reshape y_lndmrk
 y_lndmrk_train = np.reshape(y_lndmrk_train, newshape=(y_lndmrk_train.shape[0], y_lndmrk_train.shape[1] * y_lndmrk_train.shape[2]))

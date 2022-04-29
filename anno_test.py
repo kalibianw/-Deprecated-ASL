@@ -16,7 +16,7 @@ print(x_test.shape, y_cls_test.shape, y_lndmrk_test.shape)
 
 
 adm = AnnoDataModule(dataset_dir_path=None, rescaling_ratio=0.5, img_height=x_test.shape[1], img_width=x_test.shape[2])
-y_cls_test = adm.label_normalization(chars=y_cls_test)
+y_cls_test = adm.cls_normalization(chars=y_cls_test)
 y_lndmrk_test = np.reshape(y_lndmrk_test, newshape=(y_lndmrk_test.shape[0], y_lndmrk_test.shape[1] * y_lndmrk_test.shape[2]))
 
 model = models.load_model(MODEL_PATH)
