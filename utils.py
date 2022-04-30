@@ -130,7 +130,7 @@ class AnnoTrainModule:
 
         x = rescaling_layer
 
-        x = layers.Conv2D(32, kernel_size=32, padding="same", activation=activations.relu, kernel_initializer=initializers.he_uniform(), name="conv2d_0")(x)
+        x = layers.Conv2D(32, kernel_size=(3, 3), padding="same", activation=activations.relu, kernel_initializer=initializers.he_uniform(), name="conv2d_0")(x)
         x = layers.BatchNormalization()(x)
         x = layers.MaxPooling2D()(x)
 
