@@ -62,7 +62,7 @@ class AnnoDataModule:
         if (self.IMG_HEIGHT is None) or (self.IMG_WIDTH is None):
             raise Exception("""
             IMG_HEIGHT or IMG_WIDTH is None.
-            If you didn't run img_to_np, please determine the image height and width on the initialization method.
+            If you didn't run img_to_np, please determine the image height and width on the initialization process.
             """)
         ordinal_enc = OrdinalEncoder()
         ordinal_chars = ordinal_enc.fit_transform(np.expand_dims(chars, axis=-1))
@@ -77,7 +77,7 @@ class AnnoDataModule:
         if (self.IMG_HEIGHT is None) or (self.IMG_WIDTH is None):
             raise Exception("""
             IMG_HEIGHT or IMG_WIDTH is None.
-            If you didn't run img_to_np, please determine the image height and width on the initialization method.
+            If you didn't run img_to_np, please determine the image height and width on the initialization process.
             """)
         if len(landmarks.shape) != 3:
             print("landmarks should be 3d array")
