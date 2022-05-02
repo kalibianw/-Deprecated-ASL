@@ -1,6 +1,7 @@
-from utils import AnnoDataModule
+from utils import AnnoDataModule, AnnoVisualModule
 
 from keras.api.keras import models
+from sklearn.metrics import confusion_matrix
 
 import numpy as np
 
@@ -24,3 +25,19 @@ model.evaluate(
     x={"img": x_test}, y={"cls_out": y_cls_test, "lndmrk_out": y_lndmrk_test},
     batch_size=32
 )
+
+cls_pred, lndmrk_pred = model.predict(
+    x={"img": x_test},
+    verbose=1,
+    batch_size=32
+)
+lndmrk_pred = np.reshape(lndmrk_pred, newshape=(lndmrk_pred.shape[0], int(lndmrk_pred.shape[1] / 2), 2))
+print(cls_pred.shape)
+print(lndmrk_pred.shape)
+
+avm = AnnoVisualModule(is_chars_normalized=True, is_lndmrks_normalized=False)
+avm.show_output(imgs=x_test[:5], chars=cls_pred[:5], lndmrks=lndmrk_pred[:5])
+
+conf_mat = confusion_matrix(y_true=np.argmax(y_cls_test, axis=1), y_pred=np.argmax(cls_pred, axis=1))
+for row in conf_mat:
+    print(row)
