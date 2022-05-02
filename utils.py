@@ -1,15 +1,13 @@
 from tqdm import tqdm
+from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
+from keras.api.keras import models, layers, activations, initializers, optimizers, metrics, losses, callbacks
 
 import matplotlib.pyplot as plt
-import itertools
 import pandas as pd
 import numpy as np
+import itertools
 import cv2
 import os
-
-from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
-
-from keras.api.keras import models, layers, activations, initializers, optimizers, metrics, losses, callbacks
 
 
 class AnnoDataModule:
