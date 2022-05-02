@@ -4,6 +4,7 @@ from keras.api.keras import models
 from sklearn.metrics import confusion_matrix
 
 import numpy as np
+import string
 
 MODEL_PATH = "model/anno_0.5.h5"
 NPZ_PATH = "npz/AnnoNumpy_0.5.npz"
@@ -39,5 +40,8 @@ avm = AnnoVisualModule(is_chars_normalized=True, is_lndmrks_normalized=False)
 avm.show_output(imgs=x_test[:5], chars=cls_pred[:5], lndmrks=lndmrk_pred[:5])
 
 conf_mat = confusion_matrix(y_true=np.argmax(y_cls_test, axis=1), y_pred=np.argmax(cls_pred, axis=1))
-for row in conf_mat:
-    print(row)
+avm.plot_confusion_matrix(
+    conf_mat,
+    target_names=list(string.ascii_lowercase),
+    normalize=False
+)
