@@ -7,7 +7,7 @@ import os
 
 from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
 
-from tensorflow.keras import models, layers, activations, initializers, optimizers, metrics, losses, callbacks
+from keras.api.keras import models, layers, activations, initializers, optimizers, metrics, losses, callbacks
 
 
 class AnnoDataModule:
