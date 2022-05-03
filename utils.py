@@ -78,7 +78,7 @@ class AnnoDataModule:
             If you didn't run img_to_np, please determine the image height and width on the initialization process.
             """)
         if len(landmarks.shape) != 3:
-            print("landmarks should be 3d array")
+            raise Exception("landmarks should be 3d array")
 
         landmarks[:, :, 0] /= self.IMG_WIDTH
         landmarks[:, :, 1] /= self.IMG_HEIGHT
