@@ -86,6 +86,23 @@ class AnnoDataModule:
         return landmarks
 
 
+class SegDataModule(AnnoDataModule):
+    def label_to_np(self):
+        fnames = list()
+        chars = list()
+        seg_imgs = list()
+        for label_name in tqdm(os.listdir(self.DATASET_DIR_PATH), desc="label_to_np"):
+            for seg_img_fname in tqdm(os.listdir(f"{self.DATASET_DIR_PATH}/{label_name}/segmentation/")):
+                fname = f"{self.DATASET_DIR_PATH}/{label_name}/segmentation/{seg_img_fname}"
+                seg_img = cv2.imread(fname)
+                seg_img = cv2.resize(src=seg_img, dsize=(0, 0), fx=self.RESCALING_RATIO, fy=self.RESCALING_RATIO)
+                fnames.append(fname)
+                chars.append(label_name)
+                seg_imgs.append(seg_img)
+
+        return np.array(fnames), np.array(chars), np.array(seg_imgs)
+
+
 class AnnoVisualModule:
     def __init__(self, is_chars_normalized=False, is_lndmrks_normalized=False):
         self.is_chars_normalized = is_chars_normalized
