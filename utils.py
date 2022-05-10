@@ -118,7 +118,6 @@ class AnnoVisualModule:
             lndmrks[:, :, 1] *= img_height
 
         for img, char, lndmrk in zip(imgs, chars, lndmrks):
-            print(lndmrk)
             cv2.imshow(f"{char}", mat=img)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
