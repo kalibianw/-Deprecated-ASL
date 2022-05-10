@@ -7,12 +7,12 @@ RESCALING_RATIO = 0.5
 TEST_SIZE = 0.3
 COMPRESSED = False
 
-dm = AnnoDataModule(dataset_dir_path=DATASET_DIR_PATH, rescaling_ratio=RESCALING_RATIO)
+adm = AnnoDataModule(dataset_dir_path=DATASET_DIR_PATH, rescaling_ratio=RESCALING_RATIO)
 
-img_fnames, imgs = dm.img_to_np()
+img_fnames, imgs = adm.img_to_np()
 print(img_fnames.shape, imgs.shape)
 
-label_fnames, chars, landmarks = dm.label_to_np()
+label_fnames, chars, landmarks = adm.label_to_np()
 print(label_fnames.shape, chars.shape, landmarks.shape)
 
 x_train, x_test, y_cls_train, y_cls_test, y_lndmrk_train, y_lndmrk_test = train_test_split(imgs, chars, landmarks, test_size=TEST_SIZE, stratify=chars)
