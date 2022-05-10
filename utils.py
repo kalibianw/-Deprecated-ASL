@@ -170,6 +170,22 @@ class AnnoVisualModule:
         plt.show()
 
 
+class SegVisualModule(AnnoVisualModule):
+    def show_output(self, imgs, chars, seg_imgs):
+        if self.is_chars_normalized:
+            chars = np.argmax(chars, axis=1)
+
+        for img, char, seg_img in zip(imgs, chars, seg_imgs):
+            cv2.imshow(f"{char}", mat=img)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+            overlay_img = cv2.addWeighted(img, 1, seg_img, 0.4, 0)
+            cv2.imshow(f"{char}", mat=overlay_img)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+
 class AnnoTrainModule:
     def __init__(self, input_shape, batch_size, ckpt_path, model_path, log_dir):
         self.INPUT_SHAPE = input_shape
