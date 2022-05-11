@@ -308,8 +308,8 @@ class SegTrainModule(AnnoTrainModule):
             x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.relu if i <= 2 else activations.selu,
                               kernel_initializer=initializers.he_normal(), name=f"enc_conv2d_{i}_2")(x)
             x = layers.BatchNormalization(name=f"bn_{i}_2")(x)
-            x = layers.MaxPooling2D(padding="same", name=f"max_pool_2d_{i}")(x)
             end_block_layers.append(x)
+            x = layers.MaxPooling2D(padding="same", name=f"max_pool_2d_{i}")(x)
             last_enc_conv_filters = num_conv_filters
 
             if i % 2 == 0:
@@ -317,10 +317,11 @@ class SegTrainModule(AnnoTrainModule):
 
         block_cnt = 1
         for i in range(1, num_conv_blocks + 1):
-            num_conv_filters = last_enc_conv_filters / (2 * block_cnt)
+            num_conv_filters = last_enc_conv_filters / (2 ** (block_cnt - 1))
             x = layers.UpSampling2D(name=f"up_sampling_2d_{i}")(x)
             x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.selu,
                               kernel_initializer=initializers.he_normal(), name=f"dec_conv2d_{i}_1")(x)
+            x = layers.Concatenate()([x, end_block_layers[num_conv_blocks - i]])
             x = layers.BatchNormalization(name=f"bn_{i + num_conv_blocks}_1")(x)
             x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.selu,
                               kernel_initializer=initializers.he_normal(), name=f"dec_conv2d_{i}_2")(x)
@@ -329,7 +330,7 @@ class SegTrainModule(AnnoTrainModule):
             if i % 2 == 0:
                 block_cnt += 1
 
-        output_layer = layers.Conv2D(filters=3, kernel_size=(3, 3), padding="same", activation=None,
+        output_layer = layers.Conv2D(filters=3, kernel_size=(1, 1), padding="same", activation=None,
                                      kernel_initializer=initializers.he_normal(), name="seg_out")(x)
 
         model = models.Model(input_layer, output_layer)
