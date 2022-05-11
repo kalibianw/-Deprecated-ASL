@@ -69,7 +69,7 @@ stm = SegTrainModule(
     model_path=MODEL_PATH,
     log_dir=LOG_DIR
 )
-model = stm.create_model(num_conv_blocks=6)
+model = stm.create_model(num_conv_blocks=4)
 model.summary()
 model.save(filepath=MODEL_PATH)
 
