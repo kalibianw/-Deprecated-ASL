@@ -201,7 +201,7 @@ class AnnoTrainModule:
         x = rescaling_layer
 
         x = layers.Conv2D(filters=32, kernel_size=(3, 3), padding="same", activation=activations.relu,
-                          kernel_initializer=initializers.he_uniform(), name="conv2d_0")(x)
+                          kernel_initializer=initializers.he_normal(), name="conv2d_0")(x)
         x = layers.BatchNormalization()(x)
         x = layers.MaxPooling2D()(x)
 
@@ -209,10 +209,10 @@ class AnnoTrainModule:
         for i in range(1, num_conv_blocks + 1):
             num_conv_filters = 2 ** (5 + block_cnt)
             x_ = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.relu if i <= 2 else activations.selu,
-                               kernel_initializer=initializers.he_uniform(), name=f"conv2d_{i}_1")(x)
+                               kernel_initializer=initializers.he_normal(), name=f"conv2d_{i}_1")(x)
             x = layers.BatchNormalization(name=f"bn_{i}_1")(x_)
             x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.relu if i <= 2 else activations.selu,
-                              kernel_initializer=initializers.he_uniform(), name=f"conv2d_{i}_2")(x)
+                              kernel_initializer=initializers.he_normal(), name=f"conv2d_{i}_2")(x)
             x = layers.BatchNormalization(name=f"bn_{i}_2")(x)
             x = layers.Add()([x_, x])
             if i == num_conv_blocks:
@@ -225,10 +225,10 @@ class AnnoTrainModule:
 
         x = layers.Flatten()(x)
 
-        x = layers.Dense(1024, activation=activations.selu, kernel_initializer=initializers.he_uniform())(x)
+        x = layers.Dense(1024, activation=activations.selu, kernel_initializer=initializers.he_normal())(x)
 
-        cls_out = layers.Dense(26, activation=activations.softmax, kernel_initializer=initializers.he_uniform(), name="cls_out")(x)
-        lndmrk_out = layers.Dense(52, activation=None, kernel_initializer=initializers.he_uniform(), name="lndmrk_out")(x)
+        cls_out = layers.Dense(26, activation=activations.softmax, kernel_initializer=initializers.he_normal(), name="cls_out")(x)
+        lndmrk_out = layers.Dense(52, activation=None, kernel_initializer=initializers.he_normal(), name="lndmrk_out")(x)
 
         model = models.Model(input_layer, [cls_out, lndmrk_out])
         model.compile(
