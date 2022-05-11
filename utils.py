@@ -288,3 +288,61 @@ class AnnoTrainModule:
             filepath=self.CKPT_PATH
         )
         model.save(filepath=self.MODEL_PATH)
+
+
+class SegTrainModule(AnnoTrainModule):
+    def create_model(self, num_conv_blocks):
+
+        input_layer = layers.Input(shape=self.INPUT_SHAPE, name="img")
+        rescaling_layer = layers.experimental.preprocessing.Rescaling(scale=1 / 255.0)(input_layer)
+
+        x = rescaling_layer
+
+        block_cnt = 1
+        end_block_layers = list()
+        last_enc_conv_filters = int()
+        for i in range(1, num_conv_blocks + 1):
+            num_conv_filters = 2 ** (3 + block_cnt)
+            x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.relu if i <= 2 else activations.selu,
+                              kernel_initializer=initializers.he_normal(), name=f"enc_conv2d_{i}_1")(x)
+            x = layers.BatchNormalization(name=f"bn_{i}_1")(x)
+            x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.relu if i <= 2 else activations.selu,
+                              kernel_initializer=initializers.he_normal(), name=f"enc_conv2d_{i}_2")(x)
+            x = layers.BatchNormalization(name=f"bn_{i}_2")(x)
+            x = layers.MaxPooling2D(padding="same", name=f"max_pool_2d_{i}")(x)
+            end_block_layers.append(x)
+            last_enc_conv_filters = num_conv_filters
+
+            if i % 2 == 0:
+                block_cnt += 1
+
+        block_cnt = 1
+        for i in range(1, num_conv_blocks + 1):
+            num_conv_filters = last_enc_conv_filters / (2 * block_cnt)
+            x = layers.UpSampling2D(name=f"up_sampling_2d_{i}")(x)
+            x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.selu,
+                              kernel_initializer=initializers.he_normal(), name=f"dec_conv2d_{i}_1")(x)
+            x = layers.BatchNormalization(name=f"bn_{i + num_conv_blocks}_1")(x)
+            x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.selu,
+                              kernel_initializer=initializers.he_normal(), name=f"dec_conv2d_{i}_2")(x)
+            x = layers.BatchNormalization(name=f"bn_{i + num_conv_blocks}_2")(x)
+
+            if i % 2 == 0:
+                block_cnt += 1
+
+        output_layer = layers.Conv2D(filters=3, kernel_size=(3, 3), padding="same", activation=activations.softmax,
+                                     kernel_initializer=initializers.he_normal(), name="seg_out")(x)
+
+        model = models.Model(input_layer, output_layer)
+        model.compile(
+            optimizer=optimizers.Adam(),
+            loss={
+                "seg_out": losses.MSE
+            },
+            metrics={
+                "seg_out": losses.MAE
+            },
+            run_eagerly=True
+        )
+
+        return model
