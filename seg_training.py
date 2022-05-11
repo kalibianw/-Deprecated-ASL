@@ -76,10 +76,8 @@ model.save(filepath=MODEL_PATH)
 stm.train(
     model=model,
     x_train=x_train,
-    y_cls_train=y_cls_train,
-    y_lndmrk_train=y_seg_train,
     x_valid=x_valid,
-    y_cls_valid=y_cls_valid,
-    y_lndmrk_valid=y_seg_valid,
-    CALLBACKS_MONITOR=CALLBACKS_MONITOR
+    y_seg_train=y_seg_train,
+    y_seg_valid=y_seg_valid,
+    callbacks_monitor=CALLBACKS_MONITOR
 )

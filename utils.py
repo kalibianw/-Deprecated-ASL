@@ -249,10 +249,9 @@ class AnnoTrainModule:
     def train(self, model: models.Model,
               x_train, y_cls_train, y_lndmrk_train,
               x_valid, y_cls_valid, y_lndmrk_valid,
-              CALLBACKS_MONITOR,
-              cls_out_name="cls_out", lndmrk_out_name="lndmrk_out"):
+              CALLBACKS_MONITOR):
         model.fit(
-            x={"img": x_train}, y={cls_out_name: y_cls_train, lndmrk_out_name: y_lndmrk_train},
+            x={"img": x_train}, y={"cls_out": y_cls_train, "lndmrk_out": y_lndmrk_train},
             batch_size=self.BATCH_SIZE,
             epochs=1000,
             callbacks=[
@@ -281,7 +280,7 @@ class AnnoTrainModule:
                 )
             ],
             validation_data=(
-                {"img": x_valid}, {cls_out_name: y_cls_valid, lndmrk_out_name: y_lndmrk_valid}
+                {"img": x_valid}, {"cls_out": y_cls_valid, "lndmrk_out": y_lndmrk_valid}
             )
         )
         model.load_weights(
@@ -294,9 +293,9 @@ class SegTrainModule(AnnoTrainModule):
     def create_model(self, num_conv_blocks):
 
         input_layer = layers.Input(shape=self.INPUT_SHAPE, name="img")
-        rescaling_layer = layers.experimental.preprocessing.Rescaling(scale=1 / 255.0)(input_layer)
+        # rescaling_layer = layers.experimental.preprocessing.Rescaling(scale=1 / 255.0)(input_layer)
 
-        x = rescaling_layer
+        x = input_layer
 
         block_cnt = 1
         end_block_layers = list()
@@ -330,7 +329,7 @@ class SegTrainModule(AnnoTrainModule):
             if i % 2 == 0:
                 block_cnt += 1
 
-        output_layer = layers.Conv2D(filters=3, kernel_size=(3, 3), padding="same", activation=activations.softmax,
+        output_layer = layers.Conv2D(filters=3, kernel_size=(3, 3), padding="same", activation=None,
                                      kernel_initializer=initializers.he_normal(), name="seg_out")(x)
 
         model = models.Model(input_layer, output_layer)
@@ -346,3 +345,49 @@ class SegTrainModule(AnnoTrainModule):
         )
 
         return model
+
+    def train(self, *args, **kwargs):
+        model = kwargs["model"]
+        x_train = kwargs["x_train"]
+        x_valid = kwargs["x_valid"]
+        y_seg_train = kwargs["y_seg_train"],
+        y_seg_valid = kwargs["y_seg_valid"]
+        callbacks_monitor = kwargs["callbacks_monitor"]
+
+        model.fit(
+            x={"img": x_train}, y={"seg_out": y_seg_train},
+            batch_size=self.BATCH_SIZE,
+            epochs=1000,
+            callbacks=[
+                callbacks.TensorBoard(
+                    log_dir=self.LOG_DIR
+                ),
+                callbacks.ReduceLROnPlateau(
+                    monitor=callbacks_monitor,
+                    factor=0.5,
+                    patience=3,
+                    verbose=1,
+                    min_lr=1e-8
+                ),
+                callbacks.ModelCheckpoint(
+                    filepath=self.CKPT_PATH,
+                    monitor=callbacks_monitor,
+                    verbose=1,
+                    save_best_only=True,
+                    save_weights_only=True
+                ),
+                callbacks.EarlyStopping(
+                    monitor=callbacks_monitor,
+                    min_delta=1e-5,
+                    patience=11,
+                    verbose=1
+                )
+            ],
+            validation_data=(
+                {"img": x_valid}, {"seg_out": y_seg_valid}
+            )
+        )
+        model.load_weights(
+            filepath=self.CKPT_PATH
+        )
+        model.save(filepath=self.MODEL_PATH)
