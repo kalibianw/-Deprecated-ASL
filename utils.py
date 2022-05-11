@@ -200,7 +200,8 @@ class AnnoTrainModule:
 
         x = rescaling_layer
 
-        x = layers.Conv2D(32, kernel_size=(3, 3), padding="same", activation=activations.relu, kernel_initializer=initializers.he_uniform(), name="conv2d_0")(x)
+        x = layers.Conv2D(filters=32, kernel_size=(3, 3), padding="same", activation=activations.relu,
+                          kernel_initializer=initializers.he_uniform(), name="conv2d_0")(x)
         x = layers.BatchNormalization()(x)
         x = layers.MaxPooling2D()(x)
 
@@ -227,18 +228,18 @@ class AnnoTrainModule:
         x = layers.Dense(1024, activation=activations.selu, kernel_initializer=initializers.he_uniform())(x)
 
         cls_out = layers.Dense(26, activation=activations.softmax, kernel_initializer=initializers.he_uniform(), name="cls_out")(x)
-        landmark_out = layers.Dense(52, activation=None, kernel_initializer=initializers.he_uniform(), name="lndmrk_out")(x)
+        lndmrk_out = layers.Dense(52, activation=None, kernel_initializer=initializers.he_uniform(), name="lndmrk_out")(x)
 
-        model = models.Model(input_layer, [cls_out, landmark_out])
+        model = models.Model(input_layer, [cls_out, lndmrk_out])
         model.compile(
             optimizer=optimizers.Adam(),
-            metrics={
-                "cls_out": metrics.categorical_accuracy,
-                "lndmrk_out": metrics.MAE
-            },
             loss={
                 "cls_out": losses.categorical_crossentropy,
                 "lndmrk_out": losses.MSE
+            },
+            metrics={
+                "cls_out": metrics.categorical_accuracy,
+                "lndmrk_out": metrics.MAE
             },
             run_eagerly=True
         )
@@ -248,9 +249,10 @@ class AnnoTrainModule:
     def train(self, model: models.Model,
               x_train, y_cls_train, y_lndmrk_train,
               x_valid, y_cls_valid, y_lndmrk_valid,
-              CALLBACKS_MONITOR):
+              CALLBACKS_MONITOR,
+              cls_out_name="cls_out", lndmrk_out_name="lndmrk_out"):
         model.fit(
-            x={"img": x_train}, y={"cls_out": y_cls_train, "lndmrk_out": y_lndmrk_train},
+            x={"img": x_train}, y={cls_out_name: y_cls_train, lndmrk_out_name: y_lndmrk_train},
             batch_size=self.BATCH_SIZE,
             epochs=1000,
             callbacks=[
@@ -279,7 +281,7 @@ class AnnoTrainModule:
                 )
             ],
             validation_data=(
-                {"img": x_valid}, {"cls_out": y_cls_valid, "lndmrk_out": y_lndmrk_valid}
+                {"img": x_valid}, {cls_out_name: y_cls_valid, lndmrk_out_name: y_lndmrk_valid}
             )
         )
         model.load_weights(
