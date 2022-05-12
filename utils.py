@@ -374,6 +374,7 @@ class SegTrainModule(AnnoTrainModule):
                     factor=0.5,
                     patience=3,
                     verbose=1,
+                    min_delta=1e-2,
                     min_lr=1e-8
                 ),
                 callbacks.ModelCheckpoint(
@@ -385,7 +386,7 @@ class SegTrainModule(AnnoTrainModule):
                 ),
                 callbacks.EarlyStopping(
                     monitor=callbacks_monitor,
-                    min_delta=1e-5,
+                    min_delta=1e-2,
                     patience=11,
                     verbose=1
                 )
