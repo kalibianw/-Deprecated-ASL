@@ -27,7 +27,7 @@ NPZ_PATH = f"npz/SegNumpy_{RESCALING_RATIO}.npz"
 CKPT_PATH = rmkdir(f"ckpt/seg_{RESCALING_RATIO}/seg_{RESCALING_RATIO}.ckpt")
 MODEL_PATH = mkdir(f"model/seg_{RESCALING_RATIO}.h5")
 LOG_DIR = rmkdir(f"log/seg_{RESCALING_RATIO}/")
-BATCH_SIZE = 32
+BATCH_SIZE = 8
 VALID_SIZE = 0.2
 
 CALLBACKS_MONITOR = "val_loss"
