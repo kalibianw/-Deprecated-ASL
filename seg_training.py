@@ -49,7 +49,6 @@ sdm = SegDataModule(
     img_width=x_train.shape[2]
 )
 
-# Data Normalization (Image will be normalized during the training)
 y_cls_train = sdm.cls_normalization(chars=y_cls_train)
 
 print(x_train.shape, y_cls_train.shape, y_seg_train.shape)
