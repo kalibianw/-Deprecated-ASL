@@ -301,7 +301,7 @@ class SegTrainModule(AnnoTrainModule):
         end_block_layers = list()
         last_enc_conv_filters = int()
         for i in range(1, num_conv_blocks + 1):
-            num_conv_filters = 2 ** (3 + block_cnt)
+            num_conv_filters = 2 ** (4 + block_cnt)
             x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.relu if i <= 2 else activations.selu,
                               kernel_initializer=initializers.he_normal(), name=f"enc_conv2d_{i}_1")(x)
             x = layers.BatchNormalization(name=f"bn_{i}_1")(x)
