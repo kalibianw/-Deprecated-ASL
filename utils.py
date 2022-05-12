@@ -301,13 +301,16 @@ class SegTrainModule(AnnoTrainModule):
         end_block_layers = list()
         last_enc_conv_filters = int()
         for i in range(1, num_conv_blocks + 1):
-            num_conv_filters = 2 ** (3 + block_cnt)
+            num_conv_filters = 2 ** (5 + block_cnt)
             x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.relu if i <= 2 else activations.selu,
                               kernel_initializer=initializers.he_normal(), name=f"enc_conv2d_{i}_1")(x)
             x = layers.BatchNormalization(name=f"bn_{i}_1")(x)
             x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.relu if i <= 2 else activations.selu,
                               kernel_initializer=initializers.he_normal(), name=f"enc_conv2d_{i}_2")(x)
             x = layers.BatchNormalization(name=f"bn_{i}_2")(x)
+            x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.relu if i <= 2 else activations.selu,
+                              kernel_initializer=initializers.he_normal(), name=f"enc_conv2d_{i}_3")(x)
+            x = layers.BatchNormalization(name=f"bn_{i}_3")(x)
             end_block_layers.append(x)
             x = layers.MaxPooling2D(padding="same", name=f"max_pool_2d_{i}")(x)
             last_enc_conv_filters = num_conv_filters
@@ -326,6 +329,9 @@ class SegTrainModule(AnnoTrainModule):
             x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.selu,
                               kernel_initializer=initializers.he_normal(), name=f"dec_conv2d_{i}_2")(x)
             x = layers.BatchNormalization(name=f"bn_{i + num_conv_blocks}_2")(x)
+            x = layers.Conv2D(filters=num_conv_filters, kernel_size=(3, 3), padding="same", activation=activations.selu,
+                              kernel_initializer=initializers.he_normal(), name=f"dec_conv2d_{i}_3")(x)
+            x = layers.BatchNormalization(name=f"bn_{i + num_conv_blocks}_3")(x)
 
             if i % 2 == 0:
                 block_cnt += 1
