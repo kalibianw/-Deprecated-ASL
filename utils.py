@@ -372,7 +372,7 @@ class SegTrainModule(AnnoTrainModule):
                 callbacks.ReduceLROnPlateau(
                     monitor=callbacks_monitor,
                     factor=0.5,
-                    patience=3,
+                    patience=2,
                     verbose=1,
                     min_delta=1e-2,
                     min_lr=1e-8
@@ -387,7 +387,7 @@ class SegTrainModule(AnnoTrainModule):
                 callbacks.EarlyStopping(
                     monitor=callbacks_monitor,
                     min_delta=1e-2,
-                    patience=11,
+                    patience=5,
                     verbose=1
                 )
             ],
