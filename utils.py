@@ -179,7 +179,7 @@ class SegVisualModule(AnnoVisualModule):
             cv2.waitKey(0)
             cv2.destroyAllWindows()
 
-            overlay_img = cv2.addWeighted(img, 1, seg_img, 0.4, 0)
+            overlay_img = cv2.addWeighted(img, 1, seg_img, 0.4, 0, dtype=cv2.CV_32F)
             cv2.imshow(f"{char}", mat=overlay_img)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
