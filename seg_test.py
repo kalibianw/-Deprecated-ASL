@@ -29,7 +29,8 @@ seg_pred = model.predict(
 print(seg_pred.shape)
 print(np.max(seg_pred), np.min(seg_pred))
 
-seg_pred = np.asarray(seg_pred, dtype=int)
+seg_pred = np.clip(seg_pred, a_min=0, a_max=255)
+seg_pred = np.asarray(seg_pred, dtype=np.uint8)
 
 svm = SegVisualModule(is_chars_normalized=False)
 svm.show_output(imgs=x_test, chars=y_cls_test, seg_imgs=seg_pred)
