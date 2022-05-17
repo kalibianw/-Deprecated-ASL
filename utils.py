@@ -1,5 +1,6 @@
 from tqdm import tqdm
 from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
+from keras import mixed_precision
 from keras.api.keras import models, layers, activations, initializers, optimizers, metrics, losses, callbacks
 
 import matplotlib.pyplot as plt
@@ -291,9 +292,8 @@ class AnnoTrainModule:
 
 class SegTrainModule(AnnoTrainModule):
     def create_model(self, num_conv_blocks):
-
+        mixed_precision.set_global_policy("mixed_float16")
         input_layer = layers.Input(shape=self.INPUT_SHAPE, name="img")
-        # rescaling_layer = layers.experimental.preprocessing.Rescaling(scale=1 / 255.0)(input_layer)
 
         x = input_layer
 
@@ -337,7 +337,7 @@ class SegTrainModule(AnnoTrainModule):
                 block_cnt += 1
 
         output_layer = layers.Conv2D(filters=3, kernel_size=(1, 1), padding="same", activation=None,
-                                     kernel_initializer=initializers.he_normal(), name="seg_out")(x)
+                                     kernel_initializer=initializers.he_normal(), name="seg_out", dtype="float32")(x)
 
         model = models.Model(input_layer, output_layer)
         model.compile(
