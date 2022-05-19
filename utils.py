@@ -10,6 +10,8 @@ import itertools
 import cv2
 import os
 
+from copy import deepcopy
+
 
 class AnnoDataModule:
     def __init__(self, dataset_dir_path, rescaling_ratio=1, img_height=None, img_width=None):
@@ -130,6 +132,34 @@ class AnnoVisualModule:
             cv2.imshow(f"{char}", mat=img_clone)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
+
+    def draw_line(self, img, lndmrk, color):
+        lndmrk = np.asarray(lndmrk, dtype=int)
+        tmp = deepcopy(lndmrk[17:22])
+        lndmrk[17:22] = lndmrk[12:17]
+        lndmrk[12:17] = tmp
+
+        for i in range(len(lndmrk)):
+            if i % 5 == 3 and i < 23:
+                for j in range(0, 3):
+                    self._line1(img, i + j, lndmrk, color)
+                    self._line2(img, i, lndmrk, color)
+
+        # Wrist
+        cv2.line(img, lndmrk[0], lndmrk[1], color, 2)
+        cv2.line(img, lndmrk[1], lndmrk[3], color, 2)
+        cv2.line(img, lndmrk[1], lndmrk[18], color, 2)
+
+        # Thumb
+        cv2.line(img, lndmrk[23], lndmrk[1], color, 2)
+        cv2.line(img, lndmrk[23], lndmrk[24], color, 2)
+        cv2.line(img, lndmrk[24], lndmrk[25], color, 2)
+
+    def _line1(self, img, num, data, color):
+        cv2.line(img, data[num], data[num + 1], color, 2)
+
+    def _line2(self, img, num, data, color):
+        cv2.line(img, data[num], data[num + 5], color, 2)
 
     def plot_confusion_matrix(self, cm, target_names=None, cmap=None, normalize=True, labels=True, title='Confusion matrix'):
         accuracy = np.trace(cm) / float(np.sum(cm))
