@@ -109,7 +109,7 @@ class AnnoVisualModule:
         self.is_chars_normalized = is_chars_normalized
         self.is_lndmrks_normalized = is_lndmrks_normalized
 
-    def show_output(self, imgs, chars, lndmrks):
+    def draw_point(self, imgs, chars, lndmrks):
         img_height = imgs.shape[1]
         img_width = imgs.shape[2]
         if self.is_chars_normalized:
@@ -171,7 +171,7 @@ class AnnoVisualModule:
 
 
 class SegVisualModule(AnnoVisualModule):
-    def show_output(self, imgs, chars, seg_imgs):
+    def draw_point(self, imgs, chars, seg_imgs):
         if self.is_chars_normalized:
             chars = np.argmax(chars, axis=1)
 

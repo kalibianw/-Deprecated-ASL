@@ -13,4 +13,4 @@ print(imgs.shape, chars.shape, seg_imgs.shape)
 print(np.unique(chars, return_counts=True))
 
 svm = SegVisualModule(is_chars_normalized=False)
-svm.show_output(imgs[:5], chars[:5], seg_imgs[:5])
+svm.draw_point(imgs[:5], chars[:5], seg_imgs[:5])

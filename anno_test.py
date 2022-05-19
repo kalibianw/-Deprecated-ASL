@@ -37,7 +37,7 @@ print(cls_pred.shape)
 print(lndmrk_pred.shape)
 
 avm = AnnoVisualModule(is_chars_normalized=True, is_lndmrks_normalized=False)
-avm.show_output(imgs=x_test[:5], chars=cls_pred[:5], lndmrks=lndmrk_pred[:5])
+avm.draw_point(imgs=x_test[:5], chars=cls_pred[:5], lndmrks=lndmrk_pred[:5])
 
 conf_mat = confusion_matrix(y_true=np.argmax(y_cls_test, axis=1), y_pred=np.argmax(cls_pred, axis=1))
 avm.plot_confusion_matrix(
