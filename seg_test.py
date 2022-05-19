@@ -6,7 +6,7 @@ import numpy as np
 
 MODEL_PATH = "model/seg_0.5.h5"
 NPZ_PATH = "npz/SegNumpy_0.5.npz"
-BATCH_SIZE = 8
+BATCH_SIZE = 32
 
 npz_loader = np.load(NPZ_PATH)
 
