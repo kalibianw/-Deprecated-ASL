@@ -60,11 +60,6 @@ class AnnoDataModule:
         return np.array(fnames), np.array(chars), np.array(landmarks)
 
     def cls_normalization(self, chars):
-        if (self.IMG_HEIGHT is None) or (self.IMG_WIDTH is None):
-            raise Exception("""
-            IMG_HEIGHT or IMG_WIDTH is None.
-            If you didn't run img_to_np, please determine the image height and width on the initialization process.
-            """)
         ordinal_enc = OrdinalEncoder()
         ordinal_chars = ordinal_enc.fit_transform(np.expand_dims(chars, axis=-1))
 
